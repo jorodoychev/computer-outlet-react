@@ -1,0 +1,34 @@
+a.nav-link {
+    color: wheat;
+    cursor: pointer;
+}
+
+header .form-control::placeholder {
+    color: wheat;
+}
+
+li.nav-item span{
+    color: wheat;
+}
+
+li.nav-item span:hover{
+    color: wheat;
+    cursor: default;
+}
+
+#jumbotron {
+    display: flex;
+    justify-content: center;
+    height: 350px;
+    background-image: url("https://blog.flexshopper.com/wp-content/uploads/2021/02/laptops-810x446.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#jumbotron h1 {
+    margin-top: 5rem;
+    font-size: 4rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px #000000;
+}
