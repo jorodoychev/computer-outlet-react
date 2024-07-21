@@ -1,27 +1,36 @@
 import './Login.css'
 import {useContext, useState} from 'react'
 import AuthContext from "../../contexts/authContext.jsx"
-import useFormUser from "../../hooks/useFormUser.js"
+import useForm from "../../hooks/useForm.js"
 import {Link} from "react-router-dom"
 
-const loginFormKeys = {
-    Email: 'email',
-    Password: 'password',
+const validate = {
+    email: (value) => {
+        if (!value) return "Email is required!"
+        if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(value)) return "Email is not valid!"
+        return ""
+    },
+    password: (value) => {
+        if (!value) return "Password is required!"
+        if (value.length < 6) return "Password must be at least 6 characters!"
+        return ""
+    },
 }
+
+const initialValues = {email: '', password: ''}
+
 
 export default function Login() {
     const {loginSubmitHandler} = useContext(AuthContext)
     const [serverError, setServerError] = useState('')
-    const {values, errors, isValid, onChange, onBlur, onSubmit} = useFormUser(async (formData) => {
+
+    const {values, errors, isValid, onChange, onBlur, onSubmit} = useForm(async (formData) => {
         try {
             await loginSubmitHandler(formData)
         } catch (error) {
             setServerError(error.message)
         }
-    }, {
-        [loginFormKeys.Email]: '',
-        [loginFormKeys.Password]: '',
-    });
+    }, initialValues, validate)
 
     return (
         <div className="container">
@@ -34,17 +43,15 @@ export default function Login() {
                             type="email"
                             className="form-control"
                             id="email"
-                            name={loginFormKeys.Email}
+                            name="email"
                             autoComplete="email"
                             placeholder="john@gmail.com"
                             onChange={onChange}
                             onBlur={onBlur}
-                            value={values[loginFormKeys.Email]}
+                            value={values.email}
                             required
                         />
-                        {errors[loginFormKeys.Email] && (
-                            <p className="error">{errors[loginFormKeys.Email]}</p>
-                        )}
+                        {errors.email && <p className="error">{errors.email}</p>}
                     </div>
                     <div className="mb-3">
                         <label htmlFor="password" className="form-label">Password</label>
@@ -52,25 +59,23 @@ export default function Login() {
                             type="password"
                             className="form-control"
                             id="password"
-                            name={loginFormKeys.Password}
+                            name="password"
                             autoComplete="password"
                             onChange={onChange}
                             onBlur={onBlur}
                             required
                             minLength="6"
-                            value={values[loginFormKeys.Password]}
+                            value={values.password}
                         />
-                        {errors[loginFormKeys.Password] && (
-                            <p className="error">{errors[loginFormKeys.Password]}</p>
-                        )}
+                        {errors.password && <p className="error">{errors.password}</p>}
                     </div>
                     {serverError && (
                         <p className="error">{serverError}</p>
                     )}
                     <button
                         disabled={!isValid}
-                        className="btn btn-primary"
                         style={{backgroundColor: isValid ? 'blue' : 'grey'}}
+                        className="btn btn-primary"
                     >
                         Login
                     </button>

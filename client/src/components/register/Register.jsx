@@ -1,27 +1,46 @@
 import './Register.css'
-import {useContext} from "react"
+import {useContext, useState} from "react"
 import AuthContext from "../../contexts/authContext.jsx"
-import useFormUser from "../../hooks/useFormUser.js"
+import useForm from "../../hooks/useForm.js"
 import {Link} from "react-router-dom"
 
 export default function Register() {
-
-    const RegisterFormKeys = {
-        Username: 'username',
-        Email: 'email',
-        Password: 'password',
-        ConfirmPassword: 'confirm-password'
+    const validate = {
+        username: (value) => {
+            if (!value) return "Username is required!"
+            if (value.length < 5) return "Username must be at least 5 characters!"
+            return ""
+        },
+        email: (value) => {
+            if (!value) return "Email is required!"
+            if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(value)) return "Email is not valid!"
+            return ""
+        },
+        password: (value) => {
+            if (!value) return "Password is required!"
+            if (value.length < 6) return "Password must be at least 6 characters!"
+            return ""
+        },
+        confirmPassword: (value, values) => {
+            if (!value) return "Repeat password is required!"
+            if (value.length < 6) return "Password must be at least 6 characters!"
+            if (value !== values.password) return "Passwords do not match!"
+            return ""
+        },
     }
 
+    const initialValues = {email: '', password: '', confirmPassword: '', username: ''}
+
     const {registerSubmitHandler} = useContext(AuthContext)
+    const [serverError, setServerError] = useState('')
 
-    const {errors, values ,onBlur, onChange, onSubmit} = useFormUser(registerSubmitHandler, {
-        [RegisterFormKeys.Username]: '',
-        [RegisterFormKeys.Email]: '',
-        [RegisterFormKeys.Password]: '',
-        [RegisterFormKeys.ConfirmPassword]: '',
-    })
-
+    const {values, errors, isValid, onChange, onBlur, onSubmit} = useForm(async (formData) => {
+        try {
+            await registerSubmitHandler(formData)
+        } catch (error) {
+            setServerError(error.message)
+        }
+    }, initialValues, validate)
 
 
     return (
@@ -39,19 +58,10 @@ export default function Register() {
                             placeholder='john'
                             onBlur={onBlur}
                             onChange={onChange}
-                            value={values[RegisterFormKeys.Username]}
+                            value={values.username}
 
                         />
-                        {errors[RegisterFormKeys.Username] && (
-                            <p className="error">{errors[RegisterFormKeys.Username]}</p>
-                        )}
-                        {/*{touched.username && (*/}
-                        {/*    <>*/}
-                        {/*        {form.username === '' && <p className="error">Username is required!</p>}*/}
-                        {/*        {form.username.length < 5 &&*/}
-                        {/*            <p className="error">Username must be at least 5 characters!</p>}*/}
-                        {/*    </>*/}
-                        {/*)}*/}
+                        {errors.username && <p className="error">{errors.username}</p>}
                     </div>
                     <div className='mb-3'>
                         <label htmlFor='email' className='form-label'>Email</label>
@@ -65,14 +75,9 @@ export default function Register() {
                             onBlur={onBlur}
                             required
                             onChange={onChange}
-                            value={values[RegisterFormKeys.Email]}
+                            value={values.email}
                         />
-                        {/*{touched.email && (*/}
-                        {/*    <>*/}
-                        {/*        {form.email === '' && <p className="error">Email is required!</p>}*/}
-                        {/*        {!form.email.includes('@') && <p className="error">Email is not valid!</p>}*/}
-                        {/*    </>*/}
-                        {/*)}*/}
+                        {errors.email && <p className="error">{errors.email}</p>}
                     </div>
                     <div className='mb-3'>
                         <label htmlFor='password' className='form-label'>Password</label>
@@ -87,50 +92,39 @@ export default function Register() {
                             required
                             minLength="6"
                             onChange={onChange}
-                            value={values[RegisterFormKeys.Password]}
+                            value={values.password}
                         />
-                        {/*{touched.password && (*/}
-                        {/*    <>*/}
-                        {/*        {form.password === '' && <p className="error">Password is required!</p>}*/}
-                        {/*        {form.password.length < 6 &&*/}
-                        {/*            <p className="error">Password must be at least 6 characters!</p>}*/}
-                        {/*    </>*/}
-                        {/*)}*/}
+                        {errors.password && <p className="error">{errors.password}</p>}
                     </div>
                     <div className='mb-3'>
-                        <label htmlFor='confirm-password' className='form-label'>Repeat password</label>
+                        <label htmlFor='confirmPassword' className='form-label'>Repeat password</label>
                         <input
                             type='password'
                             className='form-control'
-                            id='confirm-password'
-                            name='confirm-password'
+                            id='confirmPassword'
+                            name='confirmPassword'
                             autoComplete='password'
                             placeholder='******'
                             onBlur={onBlur}
                             required
                             minLength="6"
                             onChange={onChange}
-                            value={values[RegisterFormKeys.ConfirmPassword]}
+                            value={values.confirmPassword}
                         />
-                        {/*{touched.rePassword && (*/}
-                        {/*    <>*/}
-                        {/*        {form.rePassword === '' && <p className="error">Repeat password is required!</p>}*/}
-                        {/*        {form.rePassword.length < 6 &&*/}
-                        {/*            <p className="error">Repeat password must be at least 6 characters!</p>}*/}
-                        {/*        {form.password !== form.rePassword &&*/}
-                        {/*            <p className="error">Passwords do not match!</p>}*/}
-                        {/*    </>*/}
-                        {/*)}*/}
+                        {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
                     </div>
+                    {serverError && (
+                        <p className="error">{serverError}</p>
+                    )}
                     <button
-                        // disabled={!isValid}
+                        disabled={!isValid}
+                        style={{backgroundColor: isValid ? 'blue' : 'grey'}}
                         className="btn btn-primary"
-                        // style={{backgroundColor: isValid ? 'blue' : 'grey'}}
+
                     >
                         Create Account
                     </button>
                     <div>
-                        {/*{registerFailed && (<p className="error">A user with the same email exist!</p>)}*/}
                     </div>
                     <p className='text-center'>
                         Have an account?
