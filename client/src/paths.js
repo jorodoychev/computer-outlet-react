@@ -6,7 +6,7 @@ const Path = {
     PostCreate: '/post-create',
     PostEdit: '/:postId/edit',
     PostDelete: '/:postId/delete',
-    PostDetails: '/:postId',
+    PostDetails: '/posts/:postId',
     MyPosts: '/my-posts',
     NotFound: '*',
     NotFound404: '/404',

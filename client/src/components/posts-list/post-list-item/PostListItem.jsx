@@ -23,7 +23,7 @@ export default function PostListItem({
                     <div className="card-body">
                         <h5 className="card-title">{title}</h5>
                         <p className="card-text">{description}</p>
-                        <p className="card-text">{price}</p>
+                        <p className="card-text">{price}$</p>
                         <p className="d-flex justify-content-center">
                             <Link to={`/posts/${_id}`} className="btn btn-secondary">Read more</Link>
                         </p>

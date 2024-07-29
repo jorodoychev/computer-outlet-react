@@ -19,10 +19,12 @@ export default function PostsList() {
         <div className="d-flex justify-content-center container pb-5">
             <section>
 
-                {posts.map(post => (
-                    <PostListItem key={post._id} {...post} />
-                ))}
-
+                {
+                    posts.sort((a, b) => b._id.localeCompare(a._id)).map(post => (
+                        <PostListItem key={post._id} {...post} />
+                    ))
+                }
+                
                 {posts.length === 0 && (
                     <h3 className="no-articles">No articles yet</h3>
                 )}

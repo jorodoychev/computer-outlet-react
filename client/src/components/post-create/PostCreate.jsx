@@ -1,17 +1,43 @@
 import './PostCreate.css'
-import useFormPost from "../../hooks/useFormPost.js"
-import {useNavigate} from 'react-router-dom';
-import * as postService from '../../services/postService.js';
-
-const postFormKeys = {
-    Title: 'title',
-    ImgUrl: 'imgUrl',
-    Description: 'description',
-    Price: 'price'
-}
+import {useNavigate} from 'react-router-dom'
+import * as postService from '../../services/postService.js'
+import {useState} from "react"
+import useForm from "../../hooks/useForm.js"
 
 export default function PostCreate() {
     const navigate = useNavigate()
+
+    const validate = {
+        title: (value) => {
+            if (!value) return "Title is required!"
+            if (value.length < 5) return "Title must be at least 5 characters!"
+            return ""
+        },
+        imgUrl: (value) => {
+            if (!value) return "imgUrl is required!"
+            if (!/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)\.(?:jpeg|jpg|gif|png)$/.test(value)) {
+                return "imgUrl is not valid!"
+            }
+        },
+        description: (value) => {
+            if (!value) return "Description is required!"
+            if (value.length < 10) return "Description must be at least 10 characters!"
+            return ""
+        },
+        price: (value) => {
+            if (!value) return "Price is required!"
+            if (!value.match(/^[0-9]+$/)) {
+                return "Price must be a number!"
+            }
+            if (value.length < 1) {
+                return "Price must be at least one digit long!"
+            }
+        }
+    }
+
+
+    const initialValues = {title: '', imgUrl: '', price: '', description: ''}
+    const [serverError, setServerError] = useState('')
 
     const submitHandler = async () => {
         try {
@@ -22,12 +48,14 @@ export default function PostCreate() {
         }
     }
 
-    const {values, errors, isValid, onChange, onBlur, onSubmit} = useFormPost(submitHandler, {
-        [postFormKeys.Title]: '',
-        [postFormKeys.ImgUrl]: '',
-        [postFormKeys.Description]: '',
-        [postFormKeys.Price]: '',
-    })
+    const {values, errors, isValid, onChange, onBlur, onSubmit} = useForm(async (formData) => {
+        try {
+            await submitHandler(formData)
+        } catch (error) {
+            setServerError(error.message)
+        }
+    }, initialValues, validate)
+
 
     return (
         <div className="container mb-5 pb-5">
@@ -40,17 +68,17 @@ export default function PostCreate() {
                             type="text"
                             className="form-control"
                             id="title"
-                            name={postFormKeys.Title}
+                            name="title"
                             autoComplete="on"
                             placeholder="title"
                             onChange={onChange}
                             onBlur={onBlur}
-                            value={values[postFormKeys.Title]}
+                            value={values.title}
                             required
                             minLength="5"
                         />
-                        {errors[postFormKeys.Title] && (
-                            <p className="error">{errors[postFormKeys.Title]}</p>
+                        {errors.title && (
+                            <p className="error">{errors.title}</p>
                         )}
                     </div>
                     <div className="mb-3">
@@ -59,16 +87,16 @@ export default function PostCreate() {
                             type="text"
                             className="form-control"
                             id="imgUrl"
-                            name={postFormKeys.ImgUrl}
+                            name="imgUrl"
                             autoComplete="on"
                             placeholder="imgUrl"
                             onChange={onChange}
                             onBlur={onBlur}
-                            value={values[postFormKeys.ImgUrl]}
+                            value={values.imgUrl}
                             required
                         />
-                        {errors[postFormKeys.ImgUrl] && (
-                            <p className="error">{errors[postFormKeys.ImgUrl]}</p>
+                        {errors.imgUrl && (
+                            <p className="error">{errors.imgUrl}</p>
                         )}
                     </div>
                     <div className="mb-3">
@@ -77,17 +105,17 @@ export default function PostCreate() {
                             type="text"
                             className="form-control"
                             id="description"
-                            name={postFormKeys.Description}
+                            name="description"
                             autoComplete="on"
                             placeholder="description"
                             onChange={onChange}
                             onBlur={onBlur}
-                            value={values[postFormKeys.Description]}
+                            value={values.description}
                             required
                             minLength="10"
                         />
-                        {errors[postFormKeys.Description] && (
-                            <p className="error">{errors[postFormKeys.Description]}</p>
+                        {errors.description && (
+                            <p className="error">{errors.description}</p>
                         )}
                     </div>
                     <div className="mb-3">
@@ -96,19 +124,22 @@ export default function PostCreate() {
                             type="text"
                             className="form-control"
                             id="price"
-                            name={postFormKeys.Price}
+                            name="price"
                             autoComplete="on"
                             placeholder="price"
                             onChange={onChange}
                             onBlur={onBlur}
-                            value={values[postFormKeys.Price]}
+                            value={values.price}
                             required
                             minLength="1"
                         />
-                        {errors[postFormKeys.Price] && (
-                            <p className="error">{errors[postFormKeys.Price]}</p>
+                        {errors.price && (
+                            <p className="error">{errors.price}</p>
                         )}
                     </div>
+                    {serverError && (
+                        <p className="error">{serverError}</p>
+                    )}
                     <button
                         disabled={!isValid}
                         className="btn btn-primary"
