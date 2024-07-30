@@ -3,19 +3,9 @@ import {useContext, useState} from 'react'
 import AuthContext from "../../contexts/authContext.jsx"
 import useForm from "../../hooks/useForm.js"
 import {Link} from "react-router-dom"
+import validator from "../../utils/validator.js"
 
-const validate = {
-    email: (value) => {
-        if (!value) return "Email is required!"
-        if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(value)) return "Email is not valid!"
-        return ""
-    },
-    password: (value) => {
-        if (!value) return "Password is required!"
-        if (value.length < 6) return "Password must be at least 6 characters!"
-        return ""
-    },
-}
+const validate = validator
 
 const initialValues = {email: '', password: ''}
 

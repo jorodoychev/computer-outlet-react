@@ -3,31 +3,10 @@ import {useContext, useState} from "react"
 import AuthContext from "../../contexts/authContext.jsx"
 import useForm from "../../hooks/useForm.js"
 import {Link} from "react-router-dom"
+import validator from "../../utils/validator.js"
 
 export default function Register() {
-    const validate = {
-        username: (value) => {
-            if (!value) return "Username is required!"
-            if (value.length < 5) return "Username must be at least 5 characters!"
-            return ""
-        },
-        email: (value) => {
-            if (!value) return "Email is required!"
-            if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(value)) return "Email is not valid!"
-            return ""
-        },
-        password: (value) => {
-            if (!value) return "Password is required!"
-            if (value.length < 6) return "Password must be at least 6 characters!"
-            return ""
-        },
-        confirmPassword: (value, values) => {
-            if (!value) return "Repeat password is required!"
-            if (value.length < 6) return "Password must be at least 6 characters!"
-            if (value !== values.password) return "Passwords do not match!"
-            return ""
-        },
-    }
+    const validate = validator
 
     const initialValues = {email: '', password: '', confirmPassword: '', username: ''}
 

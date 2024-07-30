@@ -1,44 +1,57 @@
-import './PostCreate.css'
-import {useNavigate} from 'react-router-dom'
-import * as postService from '../../services/postService.js'
-import {useContext, useState} from "react"
+import {useNavigate, useParams} from 'react-router-dom'
+import {useContext, useEffect, useState} from 'react'
+import * as postService from "../../services/postService.js"
 import useForm from "../../hooks/useForm.js"
 import AuthContext from "../../contexts/authContext.jsx"
 import validator from "../../utils/validator.js"
 
-export default function PostCreate() {
+
+export default function PostEdit() {
     const navigate = useNavigate()
+    const [serverError, setServerError] = useState('')
+    const {postId} = useParams()
+    const [initialValues, setInitialValues] = useState({title: '', imgUrl: '', price: '', description: ''})
+    const [post, setPost] = useState(initialValues)
     const {userId} = useContext(AuthContext)
 
     const validate = validator
 
-    const initialValues = {title: '', imgUrl: '', price: '', description: ''}
-    const [serverError, setServerError] = useState('')
+    useEffect(() => {
+        postService.getOne(postId).then((result) => {
+            setPost(result)
+            const {title, imgUrl, price, description} = result
+            setInitialValues({title, imgUrl, price, description})
+        })
+    }, [postId])
 
-    const submitHandler = async () => {
-
+    const editPostSubmitHandler = async () => {
         try {
-            await postService.create({...values, userId})
+            await postService.edit(postId, {...values, _id: postId, userId})
             navigate('/')
         } catch (err) {
-            console.error(err)
+            console.log(err)
         }
     }
 
     const {values, errors, isValid, onChange, onBlur, onSubmit} = useForm(async (formData) => {
         try {
-            await submitHandler(formData)
+            await editPostSubmitHandler(formData)
         } catch (error) {
             setServerError(error.message)
         }
     }, initialValues, validate)
 
+    const handleChange = (e) => {
+        const {name, value} = e.target
+        setPost(prevState => ({...prevState, [name]: value}))
+        onChange(e)
+    }
 
     return (
         <div className="container mb-5 pb-5">
             <form onSubmit={onSubmit} className="mb-5 pb-5">
                 <fieldset className="w-50 m-auto pt-5">
-                    <h2>Create post</h2>
+                    <h2>Update post</h2>
                     <div className="mb-3">
                         <label htmlFor="title" className="form-label">Title</label>
                         <input
@@ -48,9 +61,9 @@ export default function PostCreate() {
                             name="title"
                             autoComplete="on"
                             placeholder="title"
-                            onChange={onChange}
+                            onChange={handleChange}
                             onBlur={onBlur}
-                            value={values.title}
+                            value={post.title}
                             required
                             minLength="5"
                         />
@@ -67,9 +80,9 @@ export default function PostCreate() {
                             name="imgUrl"
                             autoComplete="on"
                             placeholder="imgUrl"
-                            onChange={onChange}
+                            onChange={handleChange}
                             onBlur={onBlur}
-                            value={values.imgUrl}
+                            value={post.imgUrl}
                             required
                         />
                         {errors.imgUrl && (
@@ -85,9 +98,9 @@ export default function PostCreate() {
                             name="description"
                             autoComplete="on"
                             placeholder="description"
-                            onChange={onChange}
+                            onChange={handleChange}
                             onBlur={onBlur}
-                            value={values.description}
+                            value={post.description}
                             required
                             minLength="10"
                         />
@@ -104,9 +117,9 @@ export default function PostCreate() {
                             name="price"
                             autoComplete="on"
                             placeholder="price"
-                            onChange={onChange}
+                            onChange={handleChange}
                             onBlur={onBlur}
-                            value={values.price}
+                            value={post.price}
                             required
                             minLength="1"
                         />
@@ -122,7 +135,7 @@ export default function PostCreate() {
                         className="btn btn-primary"
                         style={{backgroundColor: isValid ? 'blue' : 'grey'}}
                     >
-                        Create post
+                        Update post
                     </button>
                 </fieldset>
             </form>

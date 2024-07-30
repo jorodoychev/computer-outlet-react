@@ -39,15 +39,12 @@ export default function Header() {
                                         <Link className="nav-link" to="/my-posts">My posts</Link>
                                     </li>
                                     <li className="nav-item">
-                                        <Link className="nav-link" to="/logout">Logout | {username.split('@')[0]} </Link>
+                                        <Link className="nav-link" to="/logout">Logout
+                                            | {username.split('@')[0]} </Link>
                                     </li>
                                 </>
                             )}
                         </ul>
-                        <form className="d-flex" role="search">
-                            <input className="form-control me-2" type="search"
-                                   placeholder="Search" aria-label="Search" name="search"/>
-                        </form>
                     </div>
                 </div>
             </nav>

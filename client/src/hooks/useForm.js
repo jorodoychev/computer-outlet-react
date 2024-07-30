@@ -11,6 +11,7 @@ export default function useForm(submitHandler, initialValues, validate) {
             ...values,
             [name]: value
         }))
+
         if (errors[name]) {
             setErrors(errors => ({
                 ...errors,
