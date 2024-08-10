@@ -69,7 +69,7 @@ export default function Login() {
                     >
                         Login
                     </button>
-                    <p className="text-center">
+                    <p className="text-center pb-2">
                         Dont have an account?
                         <Link to="/register"> Register</Link>
                     </p>

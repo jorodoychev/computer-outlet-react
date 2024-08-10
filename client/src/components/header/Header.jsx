@@ -8,7 +8,7 @@ export default function Header() {
 
     return (
         <header>
-            <nav className="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+            <nav className="navbar navbar-expand-lg bg-body-tertiary sticky-top" data-bs-theme="dark">
                 <div className="container">
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
                             data-bs-target="#navbarSupportedContent"

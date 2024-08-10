@@ -14,5 +14,5 @@ Posts Management:
 - They can create new post
 - Edit existing ones
 - Delete post they own
-- Like post that not its own
+- Comment on the post when they are logged
 - Search in posts
