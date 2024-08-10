@@ -1,7 +1,7 @@
 # Computer-outlet
 
 ## Introduction
-This project is for project defense for React course SoftUni August 2024. 
+This project is for project defense for React course SoftUni June 2024. 
 
 ## Usage
 User Authentication:
