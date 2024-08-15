@@ -20,14 +20,16 @@ export default function PostDetails() {
     useEffect(() => {
         postService.getOne(postId)
             .then(setPost)
+            .catch(err => setServerError(err.message))
 
         commentService.getAll(postId)
             .then((result) => {
                 dispatch({
                     type: 'GET_ALL_COMMENTS',
                     payload: result,
-                });
-            });
+                })
+            })
+            .catch(err => setServerError(err.message))
     }, [postId])
 
     const addCommentHandler = async (values) => {
@@ -44,6 +46,7 @@ export default function PostDetails() {
                 payload: newComment
             })
         } catch (err) {
+            setServerError(err.message)
             console.error(err)
         }
     }

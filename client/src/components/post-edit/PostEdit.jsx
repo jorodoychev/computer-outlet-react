@@ -11,17 +11,20 @@ export default function PostEdit() {
     const [serverError, setServerError] = useState('')
     const {postId} = useParams()
     const [initialValues, setInitialValues] = useState({title: '', imgUrl: '', price: '', description: ''})
-    const [post, setPost] = useState(initialValues)
     const {userId} = useContext(AuthContext)
 
     const validate = validator
 
     useEffect(() => {
         postService.getOne(postId).then((result) => {
-            setPost(result)
-            const {title, imgUrl, price, description} = result
-            setInitialValues({title, imgUrl, price, description})
+            if (result) {
+                const {title, imgUrl, price, description} = result
+                setInitialValues({title, imgUrl, price, description})
+            }
         })
+            .catch((error) => {
+                console.error("Error fetching post:", error)
+            })
     }, [postId])
 
     const editPostSubmitHandler = async () => {
@@ -33,6 +36,12 @@ export default function PostEdit() {
         }
     }
 
+    const handleChange = (e) => {
+        const {name, value} = e.target
+        setInitialValues(prevState => ({...prevState, [name]: value}))
+        onChange(e)
+    }
+
     const {values, errors, isValid, onChange, onBlur, onSubmit} = useForm(async (formData) => {
         try {
             await editPostSubmitHandler(formData)
@@ -41,11 +50,6 @@ export default function PostEdit() {
         }
     }, initialValues, validate)
 
-    const handleChange = (e) => {
-        const {name, value} = e.target
-        setPost(prevState => ({...prevState, [name]: value}))
-        onChange(e)
-    }
 
     return (
         <div className="container mb-5 pb-5">
@@ -63,7 +67,7 @@ export default function PostEdit() {
                             placeholder="title"
                             onChange={handleChange}
                             onBlur={onBlur}
-                            value={post.title}
+                            value={initialValues.title}
                             required
                             minLength="5"
                         />
@@ -82,7 +86,7 @@ export default function PostEdit() {
                             placeholder="imgUrl"
                             onChange={handleChange}
                             onBlur={onBlur}
-                            value={post.imgUrl}
+                            value={initialValues.imgUrl}
                             required
                         />
                         {errors.imgUrl && (
@@ -100,7 +104,7 @@ export default function PostEdit() {
                             placeholder="description"
                             onChange={handleChange}
                             onBlur={onBlur}
-                            value={post.description}
+                            value={initialValues.description}
                             required
                             minLength="10"
                         />
@@ -119,7 +123,7 @@ export default function PostEdit() {
                             placeholder="price"
                             onChange={handleChange}
                             onBlur={onBlur}
-                            value={post.price}
+                            value={initialValues.price}
                             required
                             minLength="1"
                         />
